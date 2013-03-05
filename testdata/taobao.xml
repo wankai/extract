@@ -1,0 +1,20 @@
+<template domain="taobao.com" name="淘宝网">
+	<!-- 淘宝的详情页 -->
+	<url pattern="http://item.taobao.com/item.htm\?id=(\d+)" id="$1">
+		<item name="item">
+			<field name="id" output="taobao${id}" />
+			<field name="url" output="http://item.taobao.com/item.htm?id=${id}" />
+			<field name="title" xpath="//div[@class='tb-detail-hd']/h3" type="text" />
+			<field name="price" xpath="//strong[@id='J_StrPrice']" type="text" pattern="([\d,]+(\.\d+)?)" />
+			<field name="bigimg" xpath="//img[@id='J_ImgBooth']" type="img" pattern="(.*)_310x310.jpg" output="$1" />
+			<field name="collect" xpath="//script" type="html" pattern=',counterApi:"(http://.*?)"' request="$1${and}callback=DT.mods.SKU.CounterCenter.saveCounts" filter='"ICCP_1_\d+":(\d+)' output="$1" />
+			<!-- 所有属性名建dom树时，都会转化为小写 -->
+			<field name="commentcount" xpath="//div[@id='reviews']" type="attr" prop="data-commonapi" pattern="(.*)" request="$1" filter='"total":(\d+)' output="$1" />
+		</item>
+	</url>
+
+	<!-- 淘宝店铺列表页 -->
+	<url pattern="http://.*\.taobao.com/search.htm\?search=y&">
+		<link name="next" xpath="//div[@class='pagination']" type="a" pattern="(.*.taobao.com/search.htm\?search=y&.*pageNum=\d+)" output="$1" />
+	</url>
+</template>
