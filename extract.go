@@ -10,6 +10,7 @@ import (
 	"github.com/moovweb/gokogiri"
 	"github.com/moovweb/gokogiri/xml"
 	"github.com/moovweb/gokogiri/html"
+	"github.com/wankai/crawl"
 )
 
 type FieldMethod func(string) string
@@ -32,7 +33,7 @@ type Extractor struct {
 	opt *Options
 	tplMap map[string] *Template
 	methods map[string] FieldMethod
-	c *Client
+	c *crawl.Client
 }
 
 func NewExtractor(opt *Options) (ex *Extractor, err error) {
@@ -40,12 +41,11 @@ func NewExtractor(opt *Options) (ex *Extractor, err error) {
 		opt: opt,
 		tplMap: make(map[string] *Template),
 		methods: make(map[string] FieldMethod),
-		},
 	}
 	// 初始化Http客户端
 	crawlOpts := &crawl.Options{
 		UserAgent: opt.UserAgent,
-		ProxyFileL: opt.ProxyFile,
+		ProxyFile: opt.ProxyFile,
 		CookieDir: opt.CookieDir,
 	}
 	if ex.c, err = crawl.NewClient(crawlOpts); err != nil {
