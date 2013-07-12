@@ -40,14 +40,15 @@ func NewExtractor(opt *Options) (ex *Extractor, err error) {
 		opt: opt,
 		tplMap: make(map[string] *Template),
 		methods: make(map[string] FieldMethod),
-		c: &Client {
-			//UserAgent: opt.UserAgent,
-			//ProxyFile: opt.ProxyFile,
-			//CookieDir: opt.CookieDir,
 		},
 	}
 	// 初始化Http客户端
-	if err = ex.c.Init(); err != nil {
+	crawlOpts := &crawl.Options{
+		UserAgent: opt.UserAgent,
+		ProxyFileL: opt.ProxyFile,
+		CookieDir: opt.CookieDir,
+	}
+	if ex.c, err = crawl.NewClient(crawlOpts); err != nil {
 		return nil, err
 	}
 	// 加载所有模板
@@ -92,7 +93,7 @@ func (ex *Extractor) Extract(url string, doc []byte) (r Result, err error) {
 func (ex *Extractor) download(url string, referer string) (js string, err error) {
 	var res *http.Response
 	var data []byte
-	if res, err = ex.c.GetReferer(url, referer); err != nil {
+	if res, err = ex.c.Get(url, referer); err != nil {
 		return "", err
 	}
 	defer res.Body.Close()
